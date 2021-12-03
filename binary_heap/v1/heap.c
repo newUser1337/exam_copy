@@ -6,7 +6,7 @@
 void _heap_set_element(Heap *, int, int);
 void swap(Heap_node *, Heap_node *);
 void _heap_realloc_cpy_mem(Heap *, int);
-void _heap_add_new(Heap *, int, int);
+void _heap_add_new(Heap *, int);
 
 Heap *heap_init(int size)
 {
@@ -104,12 +104,12 @@ Heap_node heap_add_element(Heap *heap, void *data, int index)
     _heap_alloc_memory(heap, heap->size + 1);
     heap->Array[heap->size].data = data;
     heap->Array[heap->size].index = index;
-    _heap_add_new(heap, heap->size, index);
+    _heap_add_new(heap, heap->size);
 
     return heap->Array[heap->size++];
 }
 
-void _heap_add_new(Heap *heap, int pos, int index)
+void _heap_add_new(Heap *heap, int pos)
 {
     while (pos > 0 && heap->Array[(pos - 1) / 2].index < heap->Array[pos].index)
     {
