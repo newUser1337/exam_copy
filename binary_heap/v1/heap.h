@@ -19,7 +19,7 @@ void heap_destr(Heap **);
 int heap_get_left(int);
 int heap_get_right(int);
 int heap_get_parent(int);
-void heap_build(Heap *, int);
+void heap_build(Heap *);
 Heap_node heap_add_element(Heap*, void*,int);
 Heap_node heap_pop(Heap*);
 void heap_print_index(Heap*);

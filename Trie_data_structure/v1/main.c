@@ -9,16 +9,20 @@ int cmp_ch(void *, void *);
 int main()
 {
     Trie *tr = trie_init();
-    trie_add_word(tr, "newword");
-    trie_add_word(tr, "ward");
-    trie_add_word(tr, "warhammer");
-    trie_add_word(tr, "warmap");
-    trie_add_word(tr, "warma");
-    trie_add_word(tr, "z_prog");
+    // trie_add_word(tr, "newword");
+    // trie_add_word(tr, "ward");
+    // trie_add_word(tr, "warhammer");
+    // trie_add_word(tr, "warmap");
+    // trie_add_word(tr, "warma");
+    // trie_add_word(tr, "w");
+    // trie_add_word(tr, "z_prog");
+    trie_add_word(tr, "a");
+    trie_add_word(tr, "b");
+    trie_add_word(tr, "c");
     trie_print(tr);
 
     List *result = list_init(cmp_ch, print_ch);
-    trie_search(tr, "w", result);
+    trie_search(tr, "ab", result);
     list_print(result);
 
     list_destr(&result);

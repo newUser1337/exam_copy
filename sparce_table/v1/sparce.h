@@ -1,14 +1,15 @@
 #ifndef __SPARCE__
 #define __SPARCE__
 
-typedef struct sparce
+typedef struct Sparce
 {
     int **ST;
-    int size;
     int log;
-} sparce;
+    int *X; 
+} Sparce;
 
-sparce *sparce_init(int *, int);
-void sparce_print(sparce *);
-int sparce_rmq(sparce *, int, int);
+Sparce *sparce_init(int *, int);
+void sparce_print(Sparce *);
+int sparce_rmq(Sparce *, int, int);
+void sparce_destr(Sparce **);
 #endif

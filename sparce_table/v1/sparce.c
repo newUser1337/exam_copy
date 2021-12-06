@@ -2,38 +2,44 @@
 #include <stdlib.h>
 #include "sparce.h"
 
-void _fill_ST(int **, int *, int, int);
+void _fill_ST(Sparce *, int *);
 int _set_elemet(int **, int *, int, int);
 int _min(int, int);
 int _get_log(int);
 
-sparce *sparce_init(int *array, int size)
+Sparce *sparce_init(int *array, int size)
 {
-    sparce *sp = (sparce *)malloc(sizeof(sparce));
-
-    sp->size = size;
+    Sparce *sp = (Sparce *)malloc(sizeof(Sparce));
     sp->log = _get_log(size);
     sp->ST = (int **)malloc(sizeof(int *) * sp->log);
+    sp->X = (int *)malloc(sizeof(int) * sp->log);
+    sp->X[0] = size;
+    int m = size;
     for (int i = 0; i < sp->log; i++)
-        sp->ST[i] = (int *)malloc(sizeof(int) * sp->size);
-    _fill_ST(sp->ST, array, sp->size, sp->log);
+    {
+        if (i)
+            m -= (1 << (i - 1));
+        sp->X[i] = m;
+        sp->ST[i] = (int *)malloc(sizeof(int) * sp->X[i]);
+    }
+    _fill_ST(sp, array);
 
     return sp;
 }
 
-void _fill_ST(int **ST, int *array, int x, int y)
+void _fill_ST(Sparce *sp, int *array)
 {
-    for (int j = 0, z = 1; j < y; z = (1 << ++j))
-        for (int i = 0; i + z <= x; i++)
-            ST[j][i] = _set_elemet(ST, array, i, j);
+    for (int i = 0; i < sp->X[0]; i++)
+        sp->ST[0][i] = array[i];
+
+    for (int j = 1; j < sp->log; j++)
+        for (int i = 0; i < sp->X[j]; i++)
+            sp->ST[j][i] = _set_elemet(sp->ST, array, j - 1, i);
 }
 
-int _set_elemet(int **ST, int *array, int ix, int log)
+int _set_elemet(int **ST, int *array, int log, int index)
 {
-    if (log == 0)
-        return array[ix];
-
-    return _min(ST[log - 1][ix], ST[log - 1][ix + (1 << (log - 1))]);
+    return _min(ST[log][index], ST[log][index + (1 << log)]);
 }
 
 int _min(int a, int b)
@@ -43,35 +49,43 @@ int _min(int a, int b)
 
 int _get_log(int in)
 {
-    int i = 0;
-    while (in != 1)
-    {
-        in = in >> 1;
-        i++;
-    }
+    int i;
+    for (i = 0; in; in >>= 1, i++)
+        ;
 
-    return i + 1;
+    return i;
 }
 
-void sparce_print(sparce *sp)
+void sparce_print(Sparce *sp)
 {
     for (int j = 0; j < sp->log; j++)
     {
-        for (int i = 0; i < sp->size; i++)
-            printf("%d ", sp->ST[j][i]);
+        for (int i = 0; i < sp->X[j]; i++)
+            printf("%3d ", sp->ST[j][i]);
         printf("\n");
     }
 }
 
-int sparce_rmq(sparce *sp, int r, int l)
+int sparce_rmq(Sparce *sp, int r, int l)
 {
-    if (r > l && sp->size > r && l >= 0)
+    if (!(r > l && sp->X[0] > r && l > -1))
+        return 0;
+
+    int log = _get_log(r - l) - 1;
+    if (log)
+        return _min(sp->ST[log][l], sp->ST[log][r - (1 << log) + 1]);
+    else
+        return sp->ST[log][l];
+}
+
+void sparce_destr(Sparce **spar)
+{
+    for (int i = 0; i < (*spar)->log; i++)
     {
-        int t = _get_log(r - l) - 1;
-        if (t)
-            return _min(sp->ST[t][l], sp->ST[t][r - (1 << t) + 1]);
-        else
-            return _min(sp->ST[t][l], sp->ST[t][l]);
+        free((*spar)->ST[i]);
     }
-    return 0;
+    free((*spar)->X);
+    free((*spar)->ST);
+    free(*spar);
+    *spar = NULL;
 }

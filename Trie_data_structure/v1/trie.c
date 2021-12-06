@@ -99,7 +99,7 @@ void _trie_print_words(Trie_node *tr_node)
         _print_word(tr_node);
         printf("\n");
     }
-    if(tr_node->keys == NULL)
+    if (tr_node->keys == NULL)
         return;
     LNode *lnode = tr_node->keys->first;
     while (lnode != NULL)
@@ -121,7 +121,6 @@ void _print_word(Trie_node *tr_node)
     }
 }
 
-
 void trie_search(Trie *tr, char *str, List *result)
 {
     size_t len = strlen(str);
@@ -130,7 +129,7 @@ void trie_search(Trie *tr, char *str, List *result)
 
 void _trie_search(Trie_node *tr_node, char *str, size_t cur_pos, size_t len, size_t dep, List *result)
 {
-    if (tr_node->isFinish)
+    if (tr_node->keys == NULL)
         return;
 
     size_t next_pos;
@@ -145,11 +144,10 @@ void _trie_search(Trie_node *tr_node, char *str, size_t cur_pos, size_t len, siz
         if (next_pos == len)
         {
             _trie_get_words(((node_list *)l_node->data)->tr_next, dep, result);
-            next_pos = 0;
+            cur_pos = 0;
         }
 
         _trie_search(((node_list *)l_node->data)->tr_next, str, next_pos, len, dep + 1, result);
-
         l_node = l_node->next;
     }
 }
@@ -162,8 +160,9 @@ void _trie_get_words(Trie_node *tr_node, size_t dep, List *result)
         int z = _trie_get_word(tr_node, result, word);
         word[z] = '\n';
         list_insert(result, word);
-        return;
     }
+    if (tr_node->keys == NULL)
+        return;
 
     LNode *l_node = tr_node->keys->first;
     while (l_node != NULL)
@@ -197,7 +196,7 @@ void trie_destr(Trie **tr)
 
 void _trie_destr_node(Trie_node *tr_next)
 {
-    if (!tr_next->isFinish)
+    if (tr_next->keys != NULL)
     {
         LNode *l_node = tr_next->keys->first;
         while (l_node != NULL)

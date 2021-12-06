@@ -18,10 +18,10 @@ Heap *heap_init(int size)
     return heap;
 }
 
-void heap_build(Heap *heap, int size)
+void heap_build(Heap *heap)
 {
-    for (int i = size / 2; i > 0; i--)
-        _heap_set_element(heap, i, size);
+    for (int i = heap->size / 2; i > 0; i--)
+        _heap_set_element(heap, i, heap->size);
 }
 
 void _heap_set_element(Heap *heap, int pos, int size)
